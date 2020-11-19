@@ -1,0 +1,170 @@
+<head>
+    <title>#hack-photo-cross-platform</title>
+</head>
+
+<body>
+    <form id="main-form">
+        <div>
+            <label>Session ID: </label>
+            <input id="session-id" type="text" minlength="8" maxlength="8" required />
+            <input id="photos-selector" type="file" accept="image/*" multiple required />
+            <input type="submit" value="Send!" />
+        </div>
+        <div id="photos"></div>
+    </form>
+</body>
+
+<script>
+    var mainForm = document.getElementById("main-form");
+    var sessionIdInput = document.getElementById("session-id");
+    var photos = document.getElementById("photos");
+    var photosSelector = document.getElementById("photos-selector");
+
+    function createPhotoElement(file, dataUrl) {
+        var container = document.createElement("div");
+
+        var className = document.createAttribute("class");
+        className.value = "photoContainer";
+        container.setAttributeNode(className);
+
+        var name = document.createAttribute("data-name");
+        name.value = file.name;
+        container.setAttributeNode(name);
+
+        var lastModified = document.createAttribute("data-last-modified");
+        lastModified.value = file.lastModified;
+        container.setAttributeNode(lastModified);
+
+        var img = document.createElement("img");
+        img.src = dataUrl;
+        container.appendChild(img);
+
+        var deleteButton = document.createElement("span");
+        deleteButton.innerHTML = "✕";
+        deleteButton.onclick = function () {
+            container.remove();
+        };
+        container.appendChild(deleteButton);
+
+        return container;
+    }
+
+    function photoAlreadyExists(file) {
+        var name = file.name;
+        var lastModified = file.lastModified;
+
+        return Array.from(photos.children).some(function (photo) {
+            return photo.getAttribute("data-name") === name && parseInt(photo.getAttribute("data-last-modified")) === lastModified;
+        });
+    }
+
+    function findPhotoToReplace(file) {
+        var name = file.name;
+        return Array.from(photos.children).find(function (photo) {
+            return photo.getAttribute("data-name") === name;
+        });
+    }
+
+    function selectPhoto(file) {
+        if (photoAlreadyExists(file)) {
+            return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function () {
+            var replaceTarget = findPhotoToReplace(file);
+            var dataUrl = reader.result;
+            var newPhoto = createPhotoElement(file, dataUrl);
+
+            if (replaceTarget) {
+                photos.replaceChild(newPhoto, replaceTarget);
+            } else {
+                photos.appendChild(newPhoto);
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function selectPhotos(event) {
+        var fileList = photosSelector.files;
+        Array.from(fileList).forEach(function (file) {
+            selectPhoto(file);
+        });
+        event.preventDefault();
+    }
+    photosSelector.onchange = selectPhotos;
+
+    var POST_PHOTOS_URL = "https://dev124-uswest1adevc.dev.yelpcorp.com:4146/photos/";
+
+    function removeAllChildNodes(parent) {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild);
+        }
+    }
+
+    function submit(event) {
+        if (photos.children.length > 0) {
+            var sessionId = sessionIdInput.value;
+            var actualPostPhotosUrl = POST_PHOTOS_URL + sessionId;
+            var data = Array.from(photos.children).map(function (photoContainer) {
+                var img = photoContainer.children[0];
+                return img.src;
+            });
+
+            var xhr = new XMLHttpRequest();
+            xhr.addEventListener("load", function () {
+                removeAllChildNodes(photos);
+            });
+            xhr.open("POST", actualPostPhotosUrl);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(data));
+        } else {
+            console.log("NOTHING TO SEND!");
+        }
+
+        event.preventDefault();
+    }
+    mainForm.onsubmit = submit;
+</script>
+
+<style>
+
+#photos {
+    margin: 8px 0;
+    columns: 336px auto;
+    column-gap: 0;
+    column-fill: balance;
+}
+
+.photoContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.photoContainer > img {
+    margin: 8px;
+    max-width: 320px;
+    border-radius: 8px;
+}
+
+.photoContainer > span {
+    position: absolute;
+    padding: 8px;
+    top: 12px;
+    right: 16px;
+    font-size: 20px;
+    font-family: sans-serif;
+    color: white;
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 1));
+}
+
+.photoContainer > span:hover {
+    cursor: pointer;
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.7));
+}
+
+#session-id {
+    width: 320px;
+}
+
+</style>
