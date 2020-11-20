@@ -6,10 +6,10 @@
     <form id="main-form">
         <div>
             <input id="session-id" type="text" minlength="8" maxlength="8" required placeholder="Session ID" />
-            <input id="photos-selector" type="file" accept="image/*" multiple required />
+            <input id="photos-selector" type="file" accept="image/*" title=" " multiple required />
         </div>
         <div id="photos"></div>
-        <input type="submit" value="Send!" />
+        <input id="send-button" type="submit" value="Send!" />
     </form>
 </body>
 
@@ -132,17 +132,19 @@
 
 <style>
 
-#main-form {
-    font-size: 1.5em;
+body {
+    margin: 1rem;
 }
 
 input {
-    font-size: 1.5em;
+    font-size: 4rem;
+    border-radius: 0.5rem;
+    margin: 1rem;
+    width: calc(100% - 4rem);
 }
 
 #photos {
-    margin: 8px 0;
-    columns: 316px auto;
+    columns: calc(482px - 2rem) auto;
     column-gap: 0;
     column-fill: balance;
 }
@@ -153,29 +155,37 @@ input {
 }
 
 .photoContainer > img {
-    margin: 8px;
-    max-width: 300px;
-    border-radius: 8px;
+    margin: 1rem;
+    max-width: calc(482px - 2.5rem);
+    border-radius: 1rem;
 }
 
 .photoContainer > span {
     position: absolute;
-    padding: 8px;
-    top: 12px;
-    right: 16px;
-    font-size: 20px;
+    padding: 2rem;
+    top: 1rem;
+    right: calc(4rem / 3);
+    font-size: 4rem;
     font-family: sans-serif;
     color: white;
-    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 1));
+    filter: drop-shadow(0 0 1rem rgba(0, 0, 0, 1));
 }
 
 .photoContainer > span:hover {
     cursor: pointer;
-    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.7));
+    filter: drop-shadow(0 0 1rem rgba(0, 0, 0, 0.7));
+}
+
+#photos-selector {
+    width: 100%;
 }
 
 #session-id {
-    width: 6em;
+    display: none;
+}
+
+#send-button {
+    height: 8rem;
 }
 
 </style>
