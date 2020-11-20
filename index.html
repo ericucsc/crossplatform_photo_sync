@@ -5,12 +5,11 @@
 <body>
     <form id="main-form">
         <div>
-            <label>Session ID: </label>
-            <input id="session-id" type="text" minlength="8" maxlength="8" required />
+            <input id="session-id" type="text" minlength="8" maxlength="8" required placeholder="Session ID" />
             <input id="photos-selector" type="file" accept="image/*" multiple required />
-            <input type="submit" value="Send!" />
         </div>
         <div id="photos"></div>
+        <input type="submit" value="Send!" />
     </form>
 </body>
 
@@ -19,6 +18,10 @@
     var sessionIdInput = document.getElementById("session-id");
     var photos = document.getElementById("photos");
     var photosSelector = document.getElementById("photos-selector");
+
+    if (window.location.hash) {
+        sessionIdInput.value = window.location.hash.substr(1);
+    }
 
     function createPhotoElement(file, dataUrl) {
         var container = document.createElement("div");
@@ -94,7 +97,7 @@
     }
     photosSelector.onchange = selectPhotos;
 
-    var POST_PHOTOS_URL = "https://photo-cross-platform-server.herokuapp.com/photos/";
+    var POST_PHOTOS_URL = "https://dev124-uswest1adevc.dev.yelpcorp.com:4146/photos/";
 
     function removeAllChildNodes(parent) {
         while (parent.firstChild) {
@@ -128,6 +131,14 @@
 </script>
 
 <style>
+
+#main-form {
+    font-size: 1.5em;
+}
+
+input {
+    font-size: 1.5em;
+}
 
 #photos {
     margin: 8px 0;
@@ -164,7 +175,7 @@
 }
 
 #session-id {
-    width: 300px;
+    width: 6em;
 }
 
 </style>
