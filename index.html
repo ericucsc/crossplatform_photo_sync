@@ -7,9 +7,10 @@
         <div>
             <input id="session-id" type="text" minlength="8" maxlength="8" required placeholder="Session ID" />
             <input id="photos-selector" type="file" accept="image/*" title=" " multiple required />
+            <button id="photos-selector-button" class="button" type="button">Choose photo(s) to send</button>
         </div>
         <div id="photos"></div>
-        <input id="send-button" type="submit" value="Send!" />
+        <input id="send-button" class="button" type="submit" value="Send!" />
     </form>
 </body>
 
@@ -18,9 +19,14 @@
     var sessionIdInput = document.getElementById("session-id");
     var photos = document.getElementById("photos");
     var photosSelector = document.getElementById("photos-selector");
+    var photosSelectorButton = document.getElementById("photos-selector-button");
 
     if (window.location.hash) {
         sessionIdInput.value = window.location.hash.substr(1);
+    }
+
+    photosSelectorButton.onclick = function () {
+        photosSelector.click();
     }
 
     function createPhotoElement(file, dataUrl) {
@@ -136,7 +142,7 @@ body {
     margin: 1rem;
 }
 
-input {
+input, button {
     font-size: 4rem;
     margin: 1rem;
     width: calc(100% - 2rem);
@@ -175,16 +181,15 @@ input {
     filter: drop-shadow(0 0 1rem rgba(0, 0, 0, 0.7));
 }
 
-#photos-selector {
-    width: 100%;
-    height: 5rem;
-}
-
 #session-id {
     display: none;
 }
 
-#send-button {
+#photos-selector {
+    display: none;
+}
+
+.button {
     border-radius: 0.5rem;
     height: 8rem;
 }
